@@ -59,7 +59,7 @@ class CustomLogisticRegressionClass:
         precision = true_positives / (true_positives + false_positives) if (true_positives + false_positives) > 0 else 0
         recall = true_positives / (true_positives + false_negatives) if (true_positives + false_negatives) > 0 else 0
 
-        return accuracy, precision, recall
+        return float(accuracy), float(precision), float(recall)
 
     def fit(self, X_train: np.ndarray, y_train: np.ndarray) -> None:
         """Update the <self._weights> and <self.bias> terms trained on the training set <X_train> of shape
@@ -67,7 +67,7 @@ class CustomLogisticRegressionClass:
         Binary Cross Entropy as the cost function and Gradient Descent as the optimization algorithm."""
 
         n_observations, n_features = X_train.shape
-        self._weights = np.ones(n_features)
+        self._weights = np.zeros(n_features)
         self._bias = 0
 
         for _ in range(self._iterations):
@@ -75,17 +75,17 @@ class CustomLogisticRegressionClass:
 
             # Calculate the derivative of the mse_loss in terms of the weights and bias and update the terms
             d_weights = (1 / n_observations) * (X_train.T @ (y_predictions - y_train))
-            self._weights - self._weights - self._learning_rate * d_weights
+            self._weights = self._weights - self._learning_rate * d_weights
             d_bias = (1 / n_observations) * np.sum(y_predictions - y_train)
             self._bias = self._bias - self._learning_rate * d_bias
 
             # Update the <self._history> term
             bce_loss = self.bce_loss(y_train, y_predictions)
-            metrics = self.compute_metrics(y_train, y_predictions)
+            metrics = self.compute_metrics(y_train, np.where(y_predictions > self._threshold, 1, 0))
             self._history["Accuracy"].append(metrics[0])
             self._history["Precision"].append(metrics[1])
             self._history["Recall"].append(metrics[2])
-            self._history["loss"].append(bce_loss)
+            self._history["loss"].append(float(bce_loss))
 
     def predict_probabilities(self, X_test: np.ndarray) -> np.ndarray:
         """Return a 1-D numpy array of probabilities after applying the linear model on <X_test> and transforming
