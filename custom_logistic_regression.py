@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 class CustomLogisticRegressionClass:
@@ -69,6 +70,8 @@ class CustomLogisticRegressionClass:
         n_observations, n_features = X_train.shape
         self._weights = np.zeros(n_features)
         self._bias = 0
+        # If training the model again, remove saved information from previous run
+        self._history = {"Accuracy": [], "Precision": [], "Recall": [], "loss": []}
 
         for _ in range(self._iterations):
             y_predictions = self.predict_probabilities(X_train)
@@ -100,3 +103,14 @@ class CustomLogisticRegressionClass:
         determined after running the self.fit method and based on threshold <self._threshold>."""
         y_predictions = self.predict_probabilities(X_test)
         return np.where(y_predictions > self._threshold, 1, 0)
+
+    def plot_metric(self, metric: str) -> None:
+        if metric not in ["Accuracy", "Recall", "Precision"]:
+            raise ValueError("The metric property can only take three values: Accuracy, Recall, or Precision")
+        plt.plot(self._history[metric])
+        plt.axhline(y=1, color="black", linestyle="--")
+        plt.title("Model " + metric + " During Training")
+        plt.ylabel(metric)
+        plt.xlabel("Iteration")
+        plt.legend(["train"], loc="lower right")
+        plt.show()
