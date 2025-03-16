@@ -25,7 +25,14 @@ class CustomLogisticRegressionClass:
     def __init__(self, learning_rate: float, iterations: int, threshold: float = 0.5) -> None:
         """Initialize a new CustomLogisticRegressionClass with _learning_rate <learning_rate> and
         _iterations <iterations>, and a threshold <threshold> of determining class belonging where class = 1
-        if prob > threshold anf class = 0 otherwise. The default for threshold is 0.5."""
+        if prob > threshold and class = 0 otherwise. The default for threshold is 0.5."""
+
+        if learning_rate <= 0:
+            raise ValueError("learning rate should be greater than 0")
+        if int(iterations) != iterations or iterations <= 0:
+            raise ValueError("iterations should be a positive non-zero integer")
+        if not 0 < threshold < 1:
+            raise ValueError("threshold should be a float value between 0 and 1")
 
         self._learning_rate = learning_rate
         self._iterations = iterations
@@ -58,6 +65,11 @@ class CustomLogisticRegressionClass:
     def history(self) -> dict[str: list]:
         return self._history
 
+    def _same_size_oned_arrays(self, array1: np.ndarray, array2: np.ndarray) -> bool:
+        """Return true if both <array1> and <array2> are one dimensional arrays that have the same number of elements
+        and false otherwise"""
+        return array1.ndim == 1 and array2.ndim == 1 and array1.size == array2.size
+
     def sigmoid(self, X: np.ndarray) -> np.ndarray:
         """Return a 1-D numpy array that transforms values in <X> using the transformation sigmoid function
         to values between 0 and 1."""
@@ -66,6 +78,8 @@ class CustomLogisticRegressionClass:
 
     def bce_loss(self, y: np.ndarray, y_predictions: np.ndarray) -> np.floating[any]:
         """Return the Binary Cross Entropy (BCE) loss between <y> and <y_predictions>"""
+        if not self._same_size_oned_arrays(y, y_predictions):
+            raise ValueError("both arrays need to be one dimensional and of the same size")
         bce_loss = - np.mean((y * np.log(y_predictions)) + ((1 - y) * np.log(1 - y_predictions)))
         return bce_loss
 
@@ -75,6 +89,9 @@ class CustomLogisticRegressionClass:
         - accuracy is the proportion of how many predictions are accurate
         - precision is the proportion of how many of the positive predictions are correct
         - rcall is the proportion of how many true positives were correctly predicted"""
+        if not self._same_size_oned_arrays(y, y_predictions):
+            raise ValueError("both arrays need to be one dimensional and of the same size")
+
         true_positives = np.sum((y == 1) & (y_predictions == 1))
         true_negatives = np.sum((y == 0) & (y_predictions == 0))
         false_positives = np.sum((y == 0) & (y_predictions == 1))
@@ -91,6 +108,10 @@ class CustomLogisticRegressionClass:
         n_observations x n_features and the target variables (either 0 or 1) for each observation <y_train> using
         Binary Cross Entropy as the cost function and Gradient Descent as the optimization algorithm."""
 
+        if X_train.ndim != 2 or y_train.ndim != 1 or X_train.shape[0] != y_train.shape[0]:
+            raise ValueError("the training set should be a two dimensional array of shape n_observations x n_features "
+                             "and the number of observations should be the same as the number of classifications")
+
         n_observations, n_features = X_train.shape
         self._weights = np.zeros(n_features)
         self._bias = 0
@@ -99,7 +120,6 @@ class CustomLogisticRegressionClass:
 
         for _ in range(self._iterations):
             y_predictions = self.predict_probabilities(X_train)
-
             # Calculate the derivative of the mse_loss in terms of the weights and bias and update the terms
             d_weights = (1 / n_observations) * (X_train.T @ (y_predictions - y_train))
             self._weights = self._weights - self._learning_rate * d_weights
@@ -117,6 +137,10 @@ class CustomLogisticRegressionClass:
     def predict_probabilities(self, X_test: np.ndarray) -> np.ndarray:
         """Return a 1-D numpy array of probabilities after applying the linear model on <X_test> and transforming
         the values using the sigmoid function"""
+
+        if X_test.ndim != 2 or X_test.shape[1] != self._weights.shape[0]:
+            raise ValueError("number of features in the array should match the number of weights determined by the "
+                             "algorithm")
         model = np.dot(X_test, self._weights) + self._bias
         y_predictions = self.sigmoid(model)
         return y_predictions
