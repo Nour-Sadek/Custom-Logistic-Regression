@@ -20,7 +20,7 @@ class CustomLogisticRegressionClass:
     _threshold: float
     _weights: np.ndarray
     _bias: float
-    _history: dict
+    _history: dict[str: list]
 
     def __init__(self, learning_rate: float, iterations: int, threshold: float = 0.5) -> None:
         """Initialize a new CustomLogisticRegressionClass with _learning_rate <learning_rate> and
@@ -33,6 +33,30 @@ class CustomLogisticRegressionClass:
         self._weights = None
         self._bias = None
         self._history = {"Accuracy": [], "Precision": [], "Recall": [], "loss": []}
+
+    @property
+    def learning_rate(self) -> float:
+        return self._learning_rate
+
+    @property
+    def iterations(self) -> int:
+        return self._iterations
+
+    @property
+    def threshold(self) -> float:
+        return self._threshold
+
+    @property
+    def weights(self) -> np.ndarray:
+        return self._weights
+
+    @property
+    def bias(self) -> float:
+        return self._bias
+
+    @property
+    def history(self) -> dict[str: list]:
+        return self._history
 
     def sigmoid(self, X: np.ndarray) -> np.ndarray:
         """Return a 1-D numpy array that transforms values in <X> using the transformation sigmoid function
