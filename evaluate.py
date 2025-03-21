@@ -57,11 +57,13 @@ sklearn_model.fit(X_train, y_train)
 
 # Using sci-kit learn's model to predict classifications of the test dataset
 y_predictions_sklearn = sklearn_model.predict(X_test)
-y_probabilities_sklearn = sklearn_model.predict_proba(X_test).argmax(axis=1)
+y_predicted_probabs = sklearn_model.predict_proba(X_test)
+y_probabilities_sklearn = y_predicted_probabs.argmax(axis=1)
+probs_in_class_1_sklearn = y_predicted_probabs[:, 1]
 
 # Sort <y_probabilities_custom> based on increasing order of predicted probabilities
-indices_sorted_on_probability_sklearn = np.argsort(y_probabilities_sklearn)
-y_probabilities_sklearn_sorted = y_probabilities_sklearn[indices_sorted_on_probability_sklearn]
+indices_sorted_on_probability_sklearn = np.argsort(probs_in_class_1_sklearn)
+y_probabilities_sklearn_sorted = probs_in_class_1_sklearn[indices_sorted_on_probability_sklearn]
 y_test_sorted_based_on_sklearn_predictions = y_test[indices_sorted_on_probability_sklearn]  # Apply the same order
 
 # Visualize the probabilities of <X_test> based on predictions of custom model
