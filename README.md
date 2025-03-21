@@ -24,7 +24,7 @@ the plot
 
 - This is the scatter plot after using sci-kit learn's logistic regression model using the newton-cg solver and l2 
 penalty
-    ![Image](https://github.com/user-attachments/assets/90753b3e-f371-46a8-ac27-8ddfeaf08f12)
+    ![Image](https://github.com/user-attachments/assets/86e843c7-51c2-45f5-9f4e-985df8b4784e)
 
 - This is the scatter plot after uisng the custom logistic regression model, which uses Gradient Descent as a solver, 
 which might explain why the probability values don't converge as precisely as sci-kit learn's optimized solvers
